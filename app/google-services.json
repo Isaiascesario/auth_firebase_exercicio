@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "857021318496",
+    "firebase_url": "https://fatecipipdmfirebaseauthfiresto.firebaseio.com",
+    "project_id": "fatecipipdmfirebaseauthfiresto",
+    "storage_bucket": "fatecipipdmfirebaseauthfiresto.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857021318496:android:7619a634521018e6540a05",
+        "android_client_info": {
+          "package_name": "br.com.zenker.fatec_ipi_pdm_firebase_auth_firestore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857021318496-csqjqqoi6rrkeruks2pl3kfq65bvuoc2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "br.com.zenker.fatec_ipi_pdm_firebase_auth_firestore",
+            "certificate_hash": "1049d15e6413b0b321fafcdfbed9208d714fe32c"
+          }
+        },
+        {
+          "client_id": "857021318496-om2c0otl0bggpdhj1n9e3f9p64cdh6ts.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwgdGOMnM4W6xZ8etvuTarWxNVEJIq7ao"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857021318496-om2c0otl0bggpdhj1n9e3f9p64cdh6ts.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
