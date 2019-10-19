@@ -1,18 +1,26 @@
 package br.com.zenker.fatec_ipi_pdm_firebase_auth_firestore;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -21,12 +29,15 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
-import javax.annotation.Nullable;
+import java.util.Locale;
+import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -82,10 +93,12 @@ public class ChatActivity extends AppCompatActivity {
 class ChatViewHolder extends RecyclerView.ViewHolder {
     public TextView dataNomeTextView;
     public TextView mensagemTextView;
+    public ImageView profilePicImageView;
     public ChatViewHolder (View raiz){
         super(raiz);
         dataNomeTextView = raiz.findViewById(R.id.dataNomeTextView);
         mensagemTextView = raiz.findViewById(R.id.mensagemTextView);
+        profilePicImageView = raiz.findViewById(R.id.profilePicImageView);
     }
 }
 
@@ -93,10 +106,12 @@ class ChatAdapter extends RecyclerView.Adapter <ChatViewHolder> {
 
     private Context context;
     private List<Mensagem> mensagens;
+    private Map<String, Bitmap> fotos;
 
     public ChatAdapter(Context context, List<Mensagem> mensagens) {
         this.context = context;
         this.mensagens = mensagens;
+        fotos = new HashMap<>();
     }
 
     @NonNull
@@ -113,6 +128,39 @@ class ChatAdapter extends RecyclerView.Adapter <ChatViewHolder> {
         Mensagem m = mensagens.get(position);
         holder.dataNomeTextView.setText(context.getString(R.string.data_nome, DateHelper.format(m.getData()), m.getEmail()));
         holder.mensagemTextView.setText(m.getTexto());
+
+        StorageReference pictureStorageReference = FirebaseStorage.getInstance().getReference(
+                String.format(Locale.getDefault(), "images/%s/profilePic.jpg",
+                        m.getEmail().replace("@", ""))
+        );
+
+        if (fotos.containsKey(m.getEmail())){
+            holder.profilePicImageView.setImageBitmap(fotos.get(m.getEmail()));
+        }
+        else {
+            pictureStorageReference.getDownloadUrl().addOnSuccessListener((result) -> {
+                Glide.with(context).
+                        asBitmap().addListener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model,
+                                                Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target,
+                                                   DataSource dataSource, boolean isFirstResource) {
+                        fotos.put(m.getEmail(), resource);
+                        return true;
+                    }
+                }).
+                        load(pictureStorageReference).
+                        into(holder.profilePicImageView);
+            }).addOnFailureListener((exception) -> {
+                holder.profilePicImageView.setImageResource(R.drawable.ic_person_black_50dp);
+            });
+        }
+
     }
 
     @Override
